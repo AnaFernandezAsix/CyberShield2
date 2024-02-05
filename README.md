@@ -4,10 +4,10 @@
     <img src="https://upload.wikimedia.org/wikipedia/en/3/3b/ASIX_s.r.o._logo.png" alt="Logo" width="180" height="180">
   </a>
 
-  <h3 align="center">VulnLab</h3> 
+  <h3 align="center">CyberShield2</h3> 
 
   <p align="center">
-    A web vulnerability lab project developed by Yavuzlar.
+    A web vulnerability lab project developed by Ana, Nora, Angel y Nil.
   </p>
 </p>
 
