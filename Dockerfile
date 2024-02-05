@@ -54,4 +54,3 @@ RUN dos2unix /usr/sbin/run.sh
 EXPOSE 80
 
 CMD ["/usr/sbin/run.sh"]
-
