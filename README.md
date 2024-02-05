@@ -34,13 +34,6 @@
 <!-- Installation -->
 ## Installation
 
-### Install with DockerHub
-
-1. If you want to install on DockerHub, just type this command.
-   ```sh
-    docker run --name vulnlab -d -p 1337:80 anafernandezasix/cybershield2
-   ```
-2. Go to http://localhost:1337
 
 ### Manuel Installation
 
@@ -57,7 +50,7 @@
    ```
 3. Run container
    ```sh
-    docker run -d -p 1337:80 ana/cyber2
+    docker run -d -p 1337:80 cyber2
    ```
 4. Go to http://localhost:1337
 
