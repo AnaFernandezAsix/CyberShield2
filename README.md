@@ -46,7 +46,10 @@
 
 1. Clone the repo
    ```sh
-    git clone https://github.com/Yavuzlar/VulnLab
+    git clone https://github.com/AnaFernandezAsix/CyberShield2
+   ```
+   ```sh
+    cd CyberShield2
    ```
 2. Build docker image
    ```sh
