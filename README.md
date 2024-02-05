@@ -53,7 +53,7 @@
    ```
 2. Build docker image
    ```sh
-    docker build -t yavuzlar/vulnlab .
+    docker build -t ana/cyber2 .
    ```
 3. Run container
    ```sh
