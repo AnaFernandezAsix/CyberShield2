@@ -1,4 +1,6 @@
 <?php
+
+aaaa
     require("../../../lang/lang.php");
     $strings = tr();
 ?>
