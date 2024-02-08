@@ -1,13 +1,13 @@
 <!-- PROJECT LOGO -->
 <p align="center">
   <a href="https://siberyavuzlar.com">
-    <img src="https://i.ibb.co/nDLHW7m/logomodern.png" alt="Logo" width="180" height="180">
+    <img src="https://upload.wikimedia.org/wikipedia/en/3/3b/ASIX_s.r.o._logo.png" alt="Logo" width="180" height="180">
   </a>
 
-  <h3 align="center">VulnLab</h3> 
+  <h3 align="center">CyberShield2</h3> 
 
   <p align="center">
-    A web vulnerability lab project developed by Yavuzlar.
+    A web vulnerability lab project developed by Ana, Nora, Angel y Nil.
   </p>
 </p>
 
@@ -34,13 +34,6 @@
 <!-- Installation -->
 ## Installation
 
-### Install with DockerHub
-
-1. If you want to install on DockerHub, just type this command.
-   ```sh
-    docker run --name vulnlab -d -p 1337:80 yavuzlar/vulnlab:latest
-   ```
-2. Go to http://localhost:1337
 
 ### Manuel Installation
 
@@ -57,7 +50,7 @@
    ```
 3. Run container
    ```sh
-    docker run -d -p 1337:80 yavuzlar/vulnlab
+    docker run -d -p 1337:80 cyber2
    ```
 4. Go to http://localhost:1337
 
