@@ -9,7 +9,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $ad = htmlspecialchars($_POST['ad']);
     $soyad = htmlspecialchars($_POST['soyad']);
     $email = htmlspecialchars($_POST['email']);
-    $tel = htmlspecialchars($_POST['tel']);
+    $tel = htmlspecialchars($_POST['tel']);a
 
     // Iniciem una transacció per garantir consistència
     $db->beginTransaction();
