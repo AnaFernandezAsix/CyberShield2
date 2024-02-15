@@ -1,24 +1,25 @@
 <?php
 
 $db = new PDO('sqlite:users.db');
-$html= "";
+$html = "";
 
-if(isset($_POST['username']) && isset($_POST['password'])  ){
-    $q = $db->prepare("SELECT * FROM users_ WHERE username=:user AND password=:pass");
+if(isset($_POST['username']) && isset($_POST['password'])) {
+
+    // Use prepared statements to prevent SQL injection
+    $q = $db->prepare("SELECT * FROM users_ WHERE username=:user");
     $q->execute(array(
         'user' => $_POST['username'],
-        'pass' => $_POST['password']
     ));
-    $_select = $q -> fetch();
+    $_select = $q->fetch();
 
-    if ( isset($_select['id'])) {
-
+    // Verify password using a secure hashing algorithm (e.g., password_hash)
+    if ($_select && password_verify($_POST['password'], $_select['password'])) {
         session_start();
         $_SESSION['username'] = $_POST['username'];
-        $html =$strings["cong"];
+        $html = $strings["cong"];
         //header("Location: index.php");
     } else {
-        $html=$strings["wrong"];
+        $html = $strings["wrong"];
     }
 
 }
