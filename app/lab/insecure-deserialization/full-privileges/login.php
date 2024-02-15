@@ -1,36 +1,45 @@
 <?php
 
-	require("user.php");
-	require("db.php");
-	require("../../../lang/lang.php");
-    $strings = tr();
+require("user.php");
+require("db.php");
+require("../../../lang/lang.php");
+$strings = tr();
 
-	$db = new DB();
-	$users = $db->getUsersList();
-
-
-	if( isset( $_POST['username'] ) && isset( $_POST['password'] ) ){
-		
-		$username = $users[1]['username'];
-		$password = $users[1]['password'];
-		if( $username === md5($_POST['username']) && $password === md5($_POST['password']) ){
-
-			$isAdmin = $users[1]['isAdmin'];
-			$permissions = $users[1]['permissions'];
+$db = new DB();
+$users = $db->getUsersList();
 
 
-			$user = new User($username,$password,$isAdmin,$permissions);
-			$serializedStr = serialize($user);
-			$extremeSecretCookie = base64_encode(urlencode($serializedStr));
-			setcookie('Z3JhbnQtZnVsbC1wcml2aWxpZ2VzCg',$extremeSecretCookie);
-			header("Location: index.php");
-			exit;
-		}
-		else{
-			header("Location: login.php?msg=1");
-			exit;
-		}
-	}
+if( isset( $_POST['username'] ) && isset( $_POST['password'] ) ){
+    
+    // Obté les dades de l'usuari de la base de dades
+    $username = $users[1]['username'];
+    $password = $users[1]['password'];
+
+    // Comprova si les credencials de l'usuari coincideixen amb les introduïdes
+    if( $username === md5($_POST['username']) && $password === md5($_POST['password']) ){
+
+        // Obté la informació d'administrador i els permisos de l'usuari de la base de dades
+        $isAdmin = $users[1]['isAdmin'];
+        $permissions = $users[1]['permissions'];
+
+        // Crea un nou objecte User amb les dades de l'usuari
+        $user = new User($username,$password,$isAdmin,$permissions);
+
+        // Serialitza l'objecte User i codifica en base64 per a la cookie
+        $serializedStr = serialize($user);
+        $extremeSecretCookie = base64_encode(urlencode($serializedStr));
+
+        // Estableix la cookie amb les dades de l'usuari
+        setcookie('Z3JhbnQtZnVsbC1wcml2aWxpZ2VzCg',$extremeSecretCookie);
+        header("Location: index.php");
+        exit;
+    }
+    else{
+        // Si les credencials no coincideixen, redirigeix a la pàgina de login amb un missatge d'error
+        header("Location: login.php?msg=1");
+        exit;
+    }
+}
 
 ?>
 
@@ -38,7 +47,8 @@
 <link rel="stylesheet" type="text/css" href="css/bootstrap.min.css">
 <!------ Include the above in your HEAD tag ---------->
 
-<!DOCTYPE html><html lang='en' class=''>
+<!DOCTYPE html>
+<html lang='en' class=''>
 <head>
 
  
@@ -59,26 +69,26 @@ html { width: 100%; height:100%; overflow:hidden; }
 
  
 .login { 
-	position: absolute;
-	top: 50%;
-	left: 50%;
-	margin: -150px 0 0 -150px;
-	width:300px;
-	height:300px;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    margin: -150px 0 0 -150px;
+    width:300px;
+    height:300px;
 }
 .login h1 { color: black; text-shadow: 0 0 10px rgba(0,0,0,0.3); letter-spacing:1px; text-align:center; }
 .login h2 { text-align:center; }
 input { 
-	width: 100%; 
-	margin-bottom: 10px; 
+    width: 100%; 
+    margin-bottom: 10px; 
  
-	border: none;
-	outline: none;
-	padding: 10px;
-	font-size: 13px;
+    border: none;
+    outline: none;
+    padding: 10px;
+    font-size: 13px;
  
-	border: 1px solid rgba(0,0,0,0.3);
-	border-radius: 4px;
+    border: 1px solid rgba(0,0,0,0.3);
+    border-radius: 4px;
  
 }
  
@@ -86,17 +96,17 @@ input {
 <div class ="container">
 <div class="login">
 <?php 
-		if( isset($_GET['msg'])){			
-			if ( $_GET['msg'] == 2 )
-			echo "<h2 style = 'color:red'>".$strings['enter-system']."</h2>";
-			else
-			echo "<h2 style = 'color:red'>".$strings['invalid-credentials']."</h2>";
-		}
-		 ?>
-	<h1 ><?= $strings['sign-in']; ?></h1>
+    if( isset($_GET['msg'])){            
+        if ( $_GET['msg'] == 2 )
+        echo "<h2 style = 'color:red'>".$strings['enter-system']."</h2>";
+        else
+        echo "<h2 style = 'color:red'>".$strings['invalid-credentials']."</h2>";
+    }
+     ?>
+    <h1 ><?= $strings['sign-in']; ?></h1>
     <form method="post">
 
-    	<input type="text" name="username" placeholder="<?= $strings['username']; ?>" required="required" />
+        <input type="text" name="username" placeholder="<?= $strings['username']; ?>" required="required" />
         <input type="password" name="password" placeholder="<?= $strings['password']; ?>" required="required" />
         <button type="submit" class="btn btn-primary btn-block btn-large"><?= $strings['login']; ?></button>
     </form>
