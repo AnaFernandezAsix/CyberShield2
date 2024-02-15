@@ -1,5 +1,5 @@
 <?php
-    libxml_disable_entity_loader(true);
+    libxml_disable_entity_loader(true); //Afegim aquesta linia i ja ens estalviem el XML injection
     require("../../../lang/lang.php");
     $strings = tr();
 ?>
