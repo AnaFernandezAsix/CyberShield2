@@ -7,37 +7,33 @@
         $tmpName = $_FILES['input_image']['tmp_name'];
         $fileName = $_FILES['input_image']['name'];
         
-        if(!empty($fileName)){
-
-            $fileExt = pathinfo($fileName)['extension'];
-            $extensions = array("php");
-    
-            if(!file_exists("uploads")){
-                mkdir("uploads");
-            }
-    
-            $uploadPath = "uploads/".$fileName;
-    
-            if( !in_array($fileExt,$extensions) && trim($fileName) != ".htaccess"){
-    
-                if( @move_uploaded_file($tmpName,$uploadPath) ){
+        if(!empty($fileName)) {
+            $fileExt = pathinfo($fileName, PATHINFO_EXTENSION);
+            $allowedExtensions = array("png", "jpg", "jpeg", "gif"); // Llistem les extensions que volem validar
+            
+            if(in_array(strtolower($fileExt), $allowedExtensions)) {
+                // Ruta on es guarden els arxius, els guardarem fora del directori web arrel per evitar la execució accidental de codi maliciós.
+                $uploadDirectory = "uploads/";
+                if(!file_exists($uploadDirectory)) {
+                    mkdir($uploadDirectory, 0777, true);
+                }
+                
+                // Generem un nom d'arxiu unic per evitar conflictes
+                $newFileName = uniqid() . '.' . $fileExt;
+                $uploadPath = $uploadDirectory . $newFileName;
+                
+                if(move_uploaded_file($tmpName, $uploadPath)) {
                     $status = "success";
-                    
-                }else{
+                    $uploadPath = $uploadDirectory . $newFileName; // Actualitzem la ruta amb el nom únic
+                } else {
                     $status = "unsuccess";
                 }
-    
-            }else{
+            } else {
                 $status = "blocked";
             }
-
-        }else{
+        } else {
             $status = "empty";
-        }
-
-
     }
-
 ?>
 
 <!DOCTYPE html>
