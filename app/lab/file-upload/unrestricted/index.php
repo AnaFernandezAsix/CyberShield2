@@ -14,14 +14,15 @@
     
             $uploadPath = "uploads/".$fileName;
     
+            // Mover el archivo cargado a la carpeta de subida
             if( @move_uploaded_file($tmpName,$uploadPath) ){
-                $status = "success";
+                $status = "success"; // Éxito al cargar el archivo
                 
             }else{
-                $status = "unsuccess";
+                $status = "unsuccess"; // Falla al cargar el archivo
             }
         }else{
-            $status = "empty";
+            $status = "empty"; // No se seleccionó ningún archivo para cargar
         }
 
 
