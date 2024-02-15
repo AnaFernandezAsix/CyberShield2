@@ -81,48 +81,57 @@ $strings = tr();
                     
                   </tr>
                 </thead>
-                <tbody> <?php
+                <tbody> 
+                  <?php
+                    
+                    if(isset($_GET['search']) && $_GET['search'] != "") {
+                        // Establecer la consulta preparada con el término de búsqueda
+                        $stmt = $mysqli->prepare("SELECT * FROM users WHERE name LIKE ?");
+                        
+                        // Verificar si la preparación de la consulta fue exitosa
+                        if ($stmt) {
+                            // Agregar los símbolos de comodín para la búsqueda LIKE
+                            $search_term = "%" . $_GET['search'] . "%";
+                            
+                            // Enlazar el parámetro de búsqueda y ejecutar la consulta
+                            $stmt->bind_param("s", $search_term);
+                            $stmt->execute();
+                            
+                            // Obtener los resultados
+                            $result = $stmt->get_result();
+                        } else {
+                            // Manejar el error de preparación de consulta
+                            echo "Error en la preparación de la consulta.";
+                        }
+                    } else {
+                        // Ejecutar una consulta sin término de búsqueda
+                        $result = $mysqli->query("SELECT * FROM users");
+                    }
 
+                    // Verificar si hay resultados
+                    if ($result && $result->num_rows > 0) {
+                        // Recorrer los resultados y mostrarlos
+                        while($list = $result->fetch_assoc()) {
+                            echo '
+                                <tr>
+                                    <td>'.$list['id'].'</td>
+                                    <td>'.$list['username'].'</td>
+                                    <td>'.$list['email'].'</td>
+                                    <td>'.$list['name'].'</td>
+                                    <td>'.$list['surname'].'</td>
+                                </tr>
+                            ';
+                        }
+                    } else {
+                        echo "No se encontraron resultados.";
+                    }
 
-                                        
-                                            if(isset($_GET['search']) and $_GET['search'] != "" )
-                                            {
-                                                $query = $mysqli->query("SELECT * FROM users WHERE 
-                                                name LIKE '%" . $_GET['search'] . "%'");
-                                                while($list = $query->fetch_array())
-                                                {
-                                                    echo '
-                                                    
-																<tr>
-																	<td>'.$list['id'].'</td>
-																	<td>'.$list['username'].'</td>
-																	<td>'.$list['email'].'</td>
-																	<td>'.$list['name'].'</td>
-                                  <td>'.$list['surname'].'</td>
-                                  
-																</tr>
-                                                    ';
-                                                }
-                                            }
-                                            else
-                                            {
-                                              $query = $mysqli->query("SELECT * FROM users ");
-                                                while($list = $query->fetch_array())
-                                                {
-                                                    echo '
-                                                    
-																<tr>
-																	<td>'.$list['id'].'</td>
-																	<td>'.$list['username'].'</td>
-																	<td>'.$list['email'].'</td>
-																	<td>'.$list['name'].'</td>
-                                  <td>'.$list['surname'].'</td>
-                                  
-																</tr>
-                                                    ';
-                                                }
-                                                
-                                            }
+                    // Cerrar la consulta preparada si está abierta
+                    if (isset($stmt)) {
+                        $stmt->close();
+                    }
+                  ?>
+
                                         ?> </tbody>
               </table>
             </div>
