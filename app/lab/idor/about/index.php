@@ -13,19 +13,16 @@ $cookiepath = "/";
 ob_start();
 session_start();
 
-if (isset($_COOKIE['userid'])) {
-    $userid = $_COOKIE['userid'];
-    $control = 1;
-    setcookie("userid", "", time() - 3600, "$cookiepath");
-} else {
-    $userid = 3;
-    $control = 0;
-}
+// Asegurarse de que 'userid' esté presente y sea un entero válido
+$userid = isset($_COOKIE['userid']) ? intval($_COOKIE['userid']) : 0;
 
+// Validar los permisos de acceso del usuario antes de recuperar los datos del perfil
 $query = $db->prepare("SELECT * FROM profiles WHERE id=?");
 $query->execute([$userid]);
-// row count
-if ($result = $query->fetch(PDO::FETCH_ASSOC)) {
+$result = $query->fetch(PDO::FETCH_ASSOC);
+
+if ($result) {
+    // Asignar los datos del perfil si el usuario está autorizado
     $userid = $result['id'];
     $name = $result['namesurname'];
     $job = $result['job'];
@@ -35,6 +32,7 @@ if ($result = $query->fetch(PDO::FETCH_ASSOC)) {
     $location = $result['location'];
     $picture_url = $result['picture_url'];
 } else {
+    // Manejar el caso en que el usuario no esté autorizado para ver el perfil
     $name = "";
     $job = "";
     $about = $strings['user_notfound'];
@@ -105,11 +103,19 @@ if ($result = $query->fetch(PDO::FETCH_ASSOC)) {
 
 </html>
 
+
 <script>
     let about_button = document.getElementById('about-button');
-    // when clicked about button go to the ./info/ with create cookie
+    // When clicked about button, go to './info/' while creating a secure cookie
     about_button.addEventListener('click', () => {
-        document.cookie = "userid=<?= $userid ?>;path=<?= $cookiepath ?>";
-        window.location.href = "./";
+        let userId = "<?php echo $userid; ?>";
+        if (userId !== "") {
+            // Validate userId before setting the cookie
+            document.cookie = "userid=" + userId + "; path=<?= $cookiepath ?>";
+            window.location.href = "./";
+        } else {
+            // Handle case where userId is empty or invalid
+            console.error("Invalid userId.");
+        }
     });
 </script>
