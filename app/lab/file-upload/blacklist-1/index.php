@@ -33,6 +33,7 @@
             }
         } else {
             $status = "empty";
+        }   
     }
 ?>
 
