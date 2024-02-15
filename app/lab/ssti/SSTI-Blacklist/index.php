@@ -14,8 +14,8 @@ $strings = tr();
 <div style="text-align: center; padding-top: 15%;">
 
 <form action="" method="GET">
-    <input style="width: 35%; display:inline-block; margin: 5px" class="form-control" placeholder="<?php echo $strings['searchonpage'] ?>" type="text" name="search"><br>
-    <button style="width: 90px; margin: 1%;" class="btn btn-info" type="submit"><?php echo $strings['search'] ?></button>
+    <input style="width: 35%; display:inline-block; margin: 5px" class="form-control" placeholder="<?php echo htmlspecialchars($strings['searchonpage']) ?>" type="text" name="search"><br>
+    <button style="width: 90px; margin: 1%;" class="btn btn-info" type="submit"><?php echo htmlspecialchars($strings['search']) ?></button>
 </form>
 
 <?php
@@ -24,22 +24,18 @@ $strings = tr();
 error_reporting(E_ERROR);
 ini_set('display_errors', 0);
 
-
-
 if (isset($_GET['search'])) {
-    $search = $_GET['search'];
-
-    $blacklist = array('{{', '}}', '{%', '%}');
-    $search = str_replace($blacklist, '', $search);
+    $search = htmlspecialchars($_GET['search']);
 
     try {
         require '../../../public/vendor/autoload.php';
         Twig_Autoloader::register();
-        $loader = new Twig_Loader_String();
+        $loader = new Twig_Loader_Filesystem('/path/to/templates');
         $twig = new Twig_Environment($loader);
-        $result = $twig->render(strip_tags($search));
+        $template = $twig->load('template.twig');
+        $result = $template->render(array('search' => $search));
 
-        echo $result.' '.$strings['not_found'];
+        echo $result.' '.htmlspecialchars($strings['not_found']);
     } catch (Exception $e) {
         echo('ERROR:' . $e->getMessage());
     }
@@ -50,6 +46,6 @@ if (isset($_GET['search'])) {
 </div>
 
 
-<script id="VLBar" title="<?= $strings["title"]; ?>" category-id="12" src="/public/assets/js/vlnav.min.js"></script>
+<script id="VLBar" title="<?= htmlspecialchars($strings["title"]); ?>" category-id="12" src="/public/assets/js/vlnav.min.js"></script>
 </body>
 </html>

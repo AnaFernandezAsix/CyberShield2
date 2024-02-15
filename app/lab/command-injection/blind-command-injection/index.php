@@ -7,17 +7,20 @@ session_start();
 
 if (isset($_POST['uname']) && isset($_POST['passwd'])) {
 
+  $uname = filter_var($_POST['uname'], FILTER_SANITIZE_STRING); 
+  $passwd = hash('sha256', $_POST['passwd']); // Use a hash function for the password
+
   $q = $db->prepare("SELECT * FROM users WHERE username=:user AND password=:pass");
   $q->execute(array(
-    'user' => $_POST['uname'],
-    'pass' => $_POST['passwd']
+    'user' => $uname,
+    'pass' => $passwd
   ));
+
   $_select = $q -> fetch();
   if ( isset($_select['id'])) {
     $user = $q->fetch();
 
-    session_start();
-    $_SESSION['username'] = $_POST['uname'];
+    $_SESSION['username'] = $uname;
 
     header("Location: blind.php");
     exit;
@@ -25,11 +28,7 @@ if (isset($_POST['uname']) && isset($_POST['passwd'])) {
     echo '<h1>wrong username or pass</h1>';
   }
 }
-
 ?>
-
-
-
 
 
 <!doctype html>
