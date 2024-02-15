@@ -132,3 +132,4 @@ if (isset($_POST['email'])) {
     <script id="VLBar" title="<?= $strings["title"]; ?>" category-id="11" src="/public/assets/js/vlnav.min.js"></script>
 </body>
 </html>
+ 
