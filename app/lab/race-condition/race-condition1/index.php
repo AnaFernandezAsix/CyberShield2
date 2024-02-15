@@ -11,11 +11,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $email = htmlspecialchars($_POST['email']);
     $tel = htmlspecialchars($_POST['tel']);
 
-    // Start a database transaction
+    // Inicia una transacció a la base de dades
     $db->beginTransaction();
 
     try {
-        // Check if there is a registration with the same email
+        // Comprova si ja hi ha un registre amb el mateix correu electrònic
         $kontrolSql = "SELECT COUNT(*) AS count FROM kayit WHERE email = :email";
         $kontrolStmt = $db->prepare($kontrolSql);
         $kontrolStmt->bindParam(':email', $email);
@@ -23,9 +23,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $count = $kontrolStmt->fetchColumn();
 
         if ($count > 0) {
-            echo $strings['warning']; // Registration failed: An account with the registered email already exists.
+            echo $strings['warning']; // El registre ha fallat: ja existeix un compte amb el correu electrònic registrat.
         } else {
-            // Insert new registration
+            // Insereix un nou registre
             $ekleSql = "INSERT INTO kayit (ad, soyad, email, tel) VALUES (:ad, :soyad, :email, :tel)";
             $ekleStmt = $db->prepare($ekleSql);
             $ekleStmt->bindParam(':ad', $ad);
@@ -34,16 +34,16 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             $ekleStmt->bindParam(':tel', $tel);
 
             if ($ekleStmt->execute()) {
-                echo $strings['successful']; // Registration completed!
+                echo $strings['successful']; // Registre completat amb èxit!
             } else {
-                echo $strings['unsuccessful']; // Registration failed.
+                echo $strings['unsuccessful']; // El registre ha fallat.
             }
         }
 
-        // Commit the transaction
+        // Confirma la transacció
         $db->commit();
     } catch (PDOException $e) {
-        // Rollback the transaction on error
+        // Reverteix la transacció en cas d'error
         $db->rollBack();
         echo "Error: " . $e->getMessage();
     }
@@ -52,13 +52,13 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 session_start();
 
 if (isset($_POST['email'])) {
-    // Acquire an exclusive lock on the session data
-    session_write_close(); // Release the session lock acquired by session_start()
-    session_start(); // Reopen the session with session locking enabled
+    // Adquireix un bloqueig exclusiu sobre les dades de sessió
+    session_write_close(); // Allibera el bloqueig de sessió adquirit per session_start()
+    session_start(); // Reobre la sessió amb el bloqueig de sessió habilitat
 
     $_SESSION['email'] = $_POST['email'];
 
-    // Release the session lock
+    // Allibera el bloqueig de sessió
     session_write_close();
 }
 ?>
