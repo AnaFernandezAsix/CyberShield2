@@ -12,37 +12,48 @@ $strings = tr();
 </head>
 <body>
 
-
-
 <?php
-
-include( "baglanti.php" );
+include("baglanti.php");
 
 session_start();
-$email = isset($_SESSION['email']) ? $_SESSION['email'] : ''; // If email is set, assign it to $email, otherwise assign it an empty string
+$email = isset($_SESSION['email']) ? $_SESSION['email'] : '';
 
 if (isset($_POST['silButton'])) {
+    // Iniciar una transacción
+    $db->beginTransaction();
 
-    $sql = "DELETE FROM kayit WHERE email = :email";
-    $stmt = $db->prepare($sql);
-    $stmt->bindParam(':email', $email, PDO::PARAM_STR);
-    
-    if ($stmt->execute()) {
-        echo $strings["reg_del"].'<br>';    //Registration deleted successfully.
-    } else {
-        echo "Error";
+    try {
+        // Preparar y ejecutar la consulta de eliminación dentro de la transacción
+        $sql = "DELETE FROM kayit WHERE email = :email";
+        $stmt = $db->prepare($sql);
+        $stmt->bindParam(':email', $email, PDO::PARAM_STR);
+        
+        if ($stmt->execute()) {
+            // Confirmar la transacción si el borrado es exitoso
+            $db->commit();
+            echo $strings["reg_del"].'<br>'; // Registro eliminado con éxito.
+        } else {
+            echo "Error";
+        }
+    } catch (PDOException $e) {
+        // Revertir la transacción en caso de error
+        $db->rollBack();
+        echo "Error al eliminar el registro: " . $e->getMessage();
     }
 }
 
-
 try {
+    // Iniciar una nueva transacción para la lectura
+    $db->beginTransaction();
+
+    // Preparar y ejecutar la consulta de selección dentro de la transacción
     $sql = "SELECT * FROM kayit WHERE email = :email";
     $stmt = $db->prepare($sql);
     $stmt->bindParam(':email', $email, PDO::PARAM_STR);
     $stmt->execute();
     $results = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-    // Sonuçları ekrana yazdır
+    // Imprimir los resultados en pantalla
     if (count($results) > 0) {
         echo "<h2>$email $strings[registers] </h2>";
         echo "<table class='table'>
@@ -64,10 +75,15 @@ try {
     
         echo "</table>";
     } else {
-        echo $strings['no_registration'];    //No registration has been found yet..
+        echo $strings['no_registration']; // Todavía no se ha encontrado ningún registro.
     }
+
+    // Confirmar la transacción de lectura
+    $db->commit();
 } catch (PDOException $e) {
-    echo "Sorgu hatası: " . $e->getMessage();
+    // Revertir la transacción de lectura en caso de error
+    $db->rollBack();
+    echo "Error en la consulta: " . $e->getMessage();
 }
 
 $db = null;

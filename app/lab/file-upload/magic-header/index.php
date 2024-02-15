@@ -6,10 +6,11 @@
 
         $tmpName = $_FILES['input_image']['tmp_name'];
         $fileName = $_FILES['input_image']['name'];
+        $fileExtension = strtolower(pathinfo($fileName, PATHINFO_EXTENSION)); // Obtenir l'extensió del fitxer
 
         if(!empty($fileName)){
 
-            $extensions = array("php");
+            $extensions = array("gif", "png", "jpeg", "jpg"); // Llista d'extensions permeses
         
             if(!file_exists("uploads")){
                 mkdir("uploads");
@@ -17,28 +18,29 @@
     
             $uploadPath = "uploads/".$fileName;
             
-            if( mime_content_type($tmpName) == "image/gif" || mime_content_type($tmpName) == "image/png" || mime_content_type($tmpName) == "image/jpeg" ){
-    
-                if( @move_uploaded_file($tmpName,$uploadPath) ){
-                    $status = "success";
-                    
-                }else{
-                    $status = "unsuccess";
+            // Verificar si l'extensió del fitxer està permesa
+            if(in_array($fileExtension, $extensions)){
+
+                // Verificar si és una imatge vàlida
+                if( getimagesize($tmpName) !== false ){ // Utilitzar getimagesize per verificar si és una imatge
+                    if( @move_uploaded_file($tmpName,$uploadPath) ){
+                        $status = "success";
+                        
+                    }else{
+                        $status = "unsuccess";
+                    }
+                } else {
+                    $status = "blocked";
                 }
-    
             }else{
-                $status = "blocked";
+                $status = "blocked"; // Extensió no permesa
             }
 
         }else{
             $status = "empty";
         }
 
-
-
     }
-
-
 ?>
 
 <!DOCTYPE html>

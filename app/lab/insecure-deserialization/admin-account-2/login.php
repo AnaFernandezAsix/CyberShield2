@@ -1,45 +1,50 @@
 <?php
 
-	require("user.php");
-	require("db.php");
-	require("../../../lang/lang.php");
-    $strings = tr();
+require("user.php");
+require("db.php");
+require("../../../lang/lang.php");
+$strings = tr();
 
-	$db = new DB();
-	$users = $db->getUsersList();
+$db = new DB();
+$users = $db->getUsersList();
 
-
-	if( isset( $_POST['username'] ) && isset( $_POST['password'] ) ){
-		
-		$username = $users[1]['username'];
-		$password = $users[1]['password'];
-		$isAdmin = $users[1]['isAdmin'];
-	 
-		if( $username === md5($_POST['username']) && $password === md5($_POST['password']) ){
-
-			$user = new User($username,$password,$isAdmin);
-			$serializedStr = serialize($user);
-			$extremeSecretCookie = base64_encode(urlencode($serializedStr));
-			setcookie('d2VsY29tZS1hZG1pbmlzdHJhdG9y',$extremeSecretCookie);
-			header("Location: index.php");
-			exit;
-		}
-		else{
-			header("Location: login.php?msg=1");
-			exit;
-		}
-	}
+if( isset( $_POST['username'] ) && isset( $_POST['password'] ) ){
+    // Obté les dades de l'usuari des de la base de dades
+    $username = $users[1]['username'];
+    $password = $users[1]['password'];
+    $isAdmin = $users[1]['isAdmin'];
+ 
+    // Comprova si les credencials enviades coincideixen amb les emmagatzemades
+    if( $username === md5($_POST['username']) && $password === md5($_POST['password']) ){
+        // Crea un objecte usuari i serialitza les seves dades
+        $user = new User($username,$password,$isAdmin);
+        $serializedStr = serialize($user);
+        // Codifica la cadena serialitzada i guarda-la en una cookie
+        $extremeSecretCookie = base64_encode(urlencode($serializedStr));
+        setcookie('d2VsY29tZS1hZG1pbmlzdHJhdG9y',$extremeSecretCookie);
+        // Redirigeix a la pàgina d'inici
+        header("Location: index.php");
+        exit;
+    }
+    else{
+        // Si les credencials són incorrectes, redirigeix a la pàgina de login amb un missatge d'error
+        header("Location: login.php?msg=1");
+        exit;
+    }
+}
 
 ?>
 
 <link rel="stylesheet" type="text/css" href="css/bootstrap.min.css">
 <!------ Include the above in your HEAD tag ---------->
 
-<!DOCTYPE html><html lang='en' class=''>
+<!DOCTYPE html>
+<html lang='en' class=''>
 <head>
-
-<link rel='stylesheet prefetch' href='css/normalize.min.css'><script src='js/prefixfree.min.js'></script>
-<style class="cp-pen-styles">@import url(https://fonts.googleapis.com/css?family=Open+Sans);
+    <!-- Estils CSS -->
+    <link rel='stylesheet prefetch' href='css/normalize.min.css'>
+    <script src='js/prefixfree.min.js'></script>
+    <style class="cp-pen-styles">@import url(https://fonts.googleapis.com/css?family=Open+Sans);
 .btn { display: inline-block; *display: inline; *zoom: 1; padding: 4px 10px 4px; margin-bottom: 0; font-size: 13px; line-height: 18px; color: #333333; text-align: center;text-shadow: 0 1px 1px rgba(255, 255, 255, 0.75); vertical-align: middle; background-color: #f5f5f5; background-image: -moz-linear-gradient(top, #ffffff, #e6e6e6); background-image: -ms-linear-gradient(top, #ffffff, #e6e6e6); background-image: -webkit-gradient(linear, 0 0, 0 100%, from(#ffffff), to(#e6e6e6)); background-image: -webkit-linear-gradient(top, #ffffff, #e6e6e6); background-image: -o-linear-gradient(top, #ffffff, #e6e6e6); background-image: linear-gradient(top, #ffffff, #e6e6e6); background-repeat: repeat-x; filter: progid:dximagetransform.microsoft.gradient(startColorstr=#ffffff, endColorstr=#e6e6e6, GradientType=0); border-color: #e6e6e6 #e6e6e6 #e6e6e6; border-color: rgba(0, 0, 0, 0.1) rgba(0, 0, 0, 0.1) rgba(0, 0, 0, 0.25); border: 1px solid #e6e6e6; -webkit-border-radius: 4px; -moz-border-radius: 4px; border-radius: 4px; -webkit-box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.2), 0 1px 2px rgba(0, 0, 0, 0.05); -moz-box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.2), 0 1px 2px rgba(0, 0, 0, 0.05); box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.2), 0 1px 2px rgba(0, 0, 0, 0.05); cursor: pointer; *margin-left: .3em; }
 .btn:hover, .btn:active, .btn.active, .btn.disabled, .btn[disabled] { background-color: #e6e6e6; }
 .btn-large { padding: 9px 14px; font-size: 15px; line-height: normal; -webkit-border-radius: 5px; -moz-border-radius: 5px; border-radius: 5px; }
@@ -79,25 +84,34 @@ input {
  
 }
  
-</style></head><body>
-<div class ="container">
-<div class="login">
-<?php 
-		if( isset($_GET['msg'])){			
-			if ( $_GET['msg'] == 2 )
-			echo "<h2 style = 'color:red'>".$strings['enter-system']."</h2>";
-			else
-			echo "<h2 style = 'color:red'>".$strings['invalid-credentials']."</h2>";
-		}
-		 ?>
-	<h1 ><?= $strings['sign-in']; ?></h1>
-    <form method="post">
-	
-    	<input type="text" name="username" placeholder="<?= $strings['username']; ?>" required="required" />
-        <input type="password" name="password" placeholder="<?= $strings['password']; ?>" required="required" />
-        <button type="submit" class="btn btn-primary btn-block btn-large"><?= $strings['login']; ?></button>
-    </form>
-</div>
+</style>
+</head>
+<body>
+<div class="container">
+    <div class="login">
+        <?php 
+        // Comprova si s'ha rebut un missatge d'error per paràmetre
+        if( isset($_GET['msg'])){          
+            // Si el missatge és igual a 2, mostra un missatge d'entrada al sistema
+            if ( $_GET['msg'] == 2 )
+                echo "<h2 style='color:red'>".$strings['enter-system']."</h2>";
+            // Si no, mostra un missatge de credencials invàlides
+            else
+                echo "<h2 style='color:red'>".$strings['invalid-credentials']."</h2>";
+        }
+        ?>
+        <!-- Títol del formulari d'inici de sessió obtingut de les cadenes d'idioma -->
+        <h1><?= $strings['sign-in']; ?></h1>
+        <!-- Formulari d'inici de sessió -->
+        <form method="post">
+            <!-- Camp d'entrada per al nom d'usuari -->
+            <input type="text" name="username" placeholder="<?= $strings['username']; ?>" required="required" />
+            <!-- Camp d'entrada per a la contrasenya -->
+            <input type="password" name="password" placeholder="<?= $strings['password']; ?>" required="required" />
+            <!-- Botó d'enviament del formulari d'inici de sessió -->
+            <button type="submit" class="btn btn-primary btn-block btn-large"><?= $strings['login']; ?></button>
+        </form>
+    </div>
 </div>
 <script id="VLBar" title="<?= $strings['title']; ?>" category-id="9" src="/public/assets/js/vlnav.min.js"></script>
 </body>

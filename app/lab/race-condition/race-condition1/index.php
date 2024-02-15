@@ -3,7 +3,7 @@
 require("../../../lang/lang.php");
 $strings = tr();
 
-include( "baglanti.php" );
+include("baglanti.php");
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $ad = htmlspecialchars($_POST['ad']);
@@ -11,36 +11,58 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $email = htmlspecialchars($_POST['email']);
     $tel = htmlspecialchars($_POST['tel']);
 
+    // Inicia una transacció a la base de dades
+    $db->beginTransaction();
 
-        //Check: Is there a registration with the same email??
-        $kontrolSql = "SELECT * FROM kayit WHERE email = '$email'";
-        $kontrolSonuc = $db->query($kontrolSql);
-        $results = $kontrolSonuc->fetchAll(PDO::FETCH_ASSOC);
-        if (count($results) > 0) {
-            // A registration with the same email has been found, issue a warning..
-            echo $strings['warning'];              //Registration failed: An account with the registered email already exists.!
+    try {
+        // Comprova si ja hi ha un registre amb el mateix correu electrònic
+        $kontrolSql = "SELECT COUNT(*) AS count FROM kayit WHERE email = :email";
+        $kontrolStmt = $db->prepare($kontrolSql);
+        $kontrolStmt->bindParam(':email', $email);
+        $kontrolStmt->execute();
+        $count = $kontrolStmt->fetchColumn();
+
+        if ($count > 0) {
+            echo $strings['warning']; // El registre ha fallat: ja existeix un compte amb el correu electrònic registrat.
         } else {
-            // No registration with the same email exists, add it.
-            $ekleSql = "INSERT INTO kayit (ad, soyad, email, tel) VALUES ('$ad', '$soyad', '$email', '$tel')";
+            // Insereix un nou registre
+            $ekleSql = "INSERT INTO kayit (ad, soyad, email, tel) VALUES (:ad, :soyad, :email, :tel)";
+            $ekleStmt = $db->prepare($ekleSql);
+            $ekleStmt->bindParam(':ad', $ad);
+            $ekleStmt->bindParam(':soyad', $soyad);
+            $ekleStmt->bindParam(':email', $email);
+            $ekleStmt->bindParam(':tel', $tel);
 
-            if ($db->exec($ekleSql)) {
-                echo $strings['successful'];       //registration completed!
+            if ($ekleStmt->execute()) {
+                echo $strings['successful']; // Registre completat amb èxit!
             } else {
-                echo $strings['unsuccessful'];     //registration failed.
+                echo $strings['unsuccessful']; // El registre ha fallat.
             }
         }
 
-    $db = null;
+        // Confirma la transacció
+        $db->commit();
+    } catch (PDOException $e) {
+        // Reverteix la transacció en cas d'error
+        $db->rollBack();
+        echo "Error: " . $e->getMessage();
+    }
 }
 
-
+session_start();
 
 if (isset($_POST['email'])) {
-    session_start();
-    $_SESSION['email'] = $_POST['email'];
-}
+    // Adquireix un bloqueig exclusiu sobre les dades de sessió
+    session_write_close(); // Allibera el bloqueig de sessió adquirit per session_start()
+    session_start(); // Reobre la sessió amb el bloqueig de sessió habilitat
 
+    $_SESSION['email'] = $_POST['email'];
+
+    // Allibera el bloqueig de sessió
+    session_write_close();
+}
 ?>
+
 
 
 <!DOCTYPE html>
@@ -110,3 +132,4 @@ if (isset($_POST['email'])) {
     <script id="VLBar" title="<?= $strings["title"]; ?>" category-id="11" src="/public/assets/js/vlnav.min.js"></script>
 </body>
 </html>
+ 
