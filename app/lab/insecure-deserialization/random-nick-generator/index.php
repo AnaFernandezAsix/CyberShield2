@@ -11,55 +11,54 @@ $randomNames;
 if( isset($_COOKIE['Session']) ){
     
     try{
-    $user = unserialize(base64_decode ( $_COOKIE['Session'] ) );
-    $randomNames = $user -> generatedStrings;
-    if(empty($randomNames))
-    array_push($randomNames,"test");
+        // Deserialitza les dades de la cookie 'Session' i les guarda en la variable $user
+        $user = unserialize(base64_decode($_COOKIE['Session']));
+        $randomNames = $user->generatedStrings;
+        
+        // Comprova si la variable $randomNames està buida
+        if(empty($randomNames)) {
+            $randomNames = ["test"]; // Assigna un valor per defecte si està buida
+        }
 
-   
-    if( is_null($randomNames) ){
-        $randomNames = ["test"];
-    }
-
-    }catch(Exception $e){
+    } catch(Exception $e){
+        // En cas d'error durant la deserialització, redirigeix a la pàgina de login amb un missatge d'error
         header("Location: login.php?msg=3");
         exit;
     }
  
-    if( isset($_GET['generate'] ) ){
-        ob_start();
-        array_push($randomNames,$user->getRandomString());
-        ob_end_clean();
-        $user -> generatedStrings = $randomNames;
+    if( isset($_GET['generate']) ){
+        // Afegeix un nou nom generat aleatoriament a l'array $randomNames
+        array_push($randomNames, $user->getRandomString());
+
+        // Actualitza la propietat 'generatedStrings' de l'objecte $user amb els nous noms generats
+        $user->generatedStrings = $randomNames;
+
+        // Serialitza l'objecte $user i actualitza la cookie 'Session' amb les dades actualitzades
         $serializedStr = serialize($user);
         setcookie('Session', base64_encode($serializedStr), time()+3600, '/');
-
     }
  
-    
-
-}else{
+} else {
+    // Si no existeix la cookie 'Session', redirigeix a la pàgina de login amb un missatge d'error
     header("Location: login.php?msg=2");
     exit;
 }
-
-
-
-
 ?>
 
 <link rel="stylesheet" type="text/css" href="css/bootstrap.min.css">
 <!------ Include the above in your HEAD tag ---------->
 
-<!DOCTYPE html><html lang='en' class=''>
+<!DOCTYPE html>
+<html lang='en' class=''>
 <head>
 <style>
- h1{
+h1{
     text-align: center;
- }
+}
 </style>
 <link rel='stylesheet prefetch' href='css/normalize.min.css'><script src='js/prefixfree.min.js'></script>
-</head><body>
+</head>
+<body>
 <div style = "text-align:middle">
 <?php
   echo "<h1>";
@@ -91,9 +90,9 @@ if( isset($_COOKIE['Session']) ){
   <div style = "text-align:center;" >
   <form>
   <input value="generate" type ="hidden" name="generate">
-<button  type="submit"><?= $strings['generate-nick'];?></button>
-</form>
-</div>
+  <button type="submit"><?= $strings['generate-nick'];?></button>
+  </form>
+  </div>
 </div>
 </body>
 <script id="VLBar" title="<?= $strings['title']; ?>" category-id="9" src="/public/assets/js/vlnav.min.js"></script>
