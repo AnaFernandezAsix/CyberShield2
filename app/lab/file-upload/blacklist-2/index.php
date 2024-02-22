@@ -9,34 +9,32 @@
 
         if(!empty($fileName)){
             
-            $extensions = array("php","php1","php2","php3","php4","php5","php6","php7","php8","pht","phtm","phar","phps","html","htm","shtml","phtml","sh","ini","css","js"); //blacklist
+            // Extensions permeses
+            $allowedExtensions = array("jpg", "jpeg", "png", "gif");
 
-            $fileExt = pathinfo($fileName)['extension'];
-    
-            if(!file_exists("uploads")){
-                mkdir("uploads");
-            }
-            
-            $uploadPath = "uploads/".$fileName;
-    
-            if( !in_array(strtolower($fileExt),$extensions) ){
-    
-                if( @move_uploaded_file($tmpName,$uploadPath) ){
+            $fileExt = strtolower(pathinfo($fileName)['extension']);
+
+            if(in_array($fileExt, $allowedExtensions)) {
+
+                if(!file_exists("uploads")){
+                    mkdir("uploads");
+                }
+                
+                $uploadPath = "uploads/".$fileName;
+
+                if(move_uploaded_file($tmpName, $uploadPath)){
                     $status = "success";
-                    
-                }else{
+                } else {
                     $status = "unsuccess";
                 }
-    
-            }else{
+
+            } else {
                 $status = "blocked";
             }
 
-        }else{
+        } else {
             $status = "empty";
         }
-
-
     }
 
 ?>
