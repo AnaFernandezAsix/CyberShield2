@@ -3,13 +3,17 @@
 include "./lang/lang.php";
 require "./functions.php";
 
-$vulnID = $_GET["id"];
-$lang = getLang();
+// Validación y sanitización del parámetro "id" para prevenir inyección de SQL
+$vulnID = filter_input(INPUT_GET, 'id', FILTER_SANITIZE_NUMBER_INT);
+
+// Validación del idioma para prevenir ataques de manipulación de sesiones o contenido
+$lang = isset($_COOKIE['lang']) ? $_COOKIE['lang'] : 'en';
+$lang = in_array($lang, ['en', 'tr', 'fr']) ? $lang : 'en';
+
 $tr = tr('./lang');
 $labs = getLabs($vulnID);
 $vuln = getVuln($vulnID);
 $resources = getRes($vulnID);
-
 
 ?>
 <!DOCTYPE html>
@@ -68,8 +72,8 @@ $resources = getRes($vulnID);
     
 <section id="labs">
         <div class="container">
-          <h1 class="display-6 fw-semi-bold"> <?= $vuln["title"][$lang]; ?> </h1>
-          <p class="fs-2"> <?= $vuln["description"][$lang]; ?> </p>
+          <h1 class="display-6 fw-semi-bold"> <?= htmlspecialchars($vuln["title"][$lang]); ?> </h1>
+          <p class="fs-2"> <?= htmlspecialchars($vuln["description"][$lang]); ?> </p>
           
           <div class="accordion-res">        
             <div class="accordion__item">
@@ -90,7 +94,7 @@ $resources = getRes($vulnID);
               <div class="accordion__content">
                 <ul>
                   <?php foreach ($resources as  $res) {
-                    echo '<li><a href="'.$res.'" target="_blank"> '.$res.'</a></li>';
+                    echo '<li><a href="'.htmlspecialchars($res).'" target="_blank"> '.htmlspecialchars($res).'</a></li>';
                     }?>
                 </ul>
               </div>
@@ -122,11 +126,11 @@ $resources = getRes($vulnID);
               ?>
               <div class="row mb-3">
                 <div class="col-md-12">
-                <a href="<?=$lab['url'] ?>" class="text-decoration-none text-muted">
+                <a href="<?=htmlspecialchars($lab['url']) ?>" class="text-decoration-none text-muted">
                   <div class="border rounded-1 border-700 h-100 features-items">
                     <div class="p-4">
-                      <h3 class="lh-base"><?= $lab["title"][$lang] ?></h3>
-                      <p class="mb-0"><?= $lab["description"][$lang] ?></p>
+                      <h3 class="lh-base"><?= htmlspecialchars($lab["title"][$lang]) ?></h3>
+                      <p class="mb-0"><?= htmlspecialchars($lab["description"][$lang]) ?></p>
                     </div>
                   </div>
             </a>
