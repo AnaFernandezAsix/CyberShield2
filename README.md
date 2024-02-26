@@ -46,11 +46,11 @@
    ```
 2. Build docker image
    ```sh
-    docker build -t ana/cyber2 .
+    sudo docker build -t ana/cyber2 .
    ```
 3. Run container
    ```sh
-    docker run -d -p 1337:80 cyber2
+    sudo docker run -d -p 1337:80 cyber2
    ```
 4. Go to http://localhost:1337
 
